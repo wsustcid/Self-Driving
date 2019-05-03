@@ -88,6 +88,8 @@ class: middle, center
 ### Video example from YouTube
 ```
 
+https://support.brightcove.com/available-options-standard-iframe-embed-code
+
 HTML5 code also works as a way to embed files from the `assets`folder (or elsewhere).
 
 ```html

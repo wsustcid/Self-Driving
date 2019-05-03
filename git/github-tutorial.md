@@ -143,8 +143,17 @@ git remote remove origin
 git remote add origin git@github.com:git_username/repository_name.git
 git push -u origin nvidia-docker
 
-# 版本回退
+##  版本回退
+# 1. 本地代码（或文件）已经add但是还未commit； 
+# 2. 要回退的commit的代码已经commit了，但是还未push到远程个人repository 
 git reset --hard id
+
+# 3. 要回退的commit的代码已经push到远程的个人分支，但是还未merge到公共的repository 
+先使用git reset [commit]回退，如何使用git push -f [commit]来强制更新你的远程库2
+
+# 4. 要回退的commit的代码已被merge（合入)到公共的repository
+对于最后一种情况，考虑到其他人的版本历史，使用git reset [commit]是不建议的，此时我们应该使用git revert [commit]改命令不会修改之前的提交历史，相当于对数据做了一次逆操作，然后再执行add，commit等命令。
+git revert与reset的区别是git revert会生成一个新的提交来撤销某次提交，此次提交之前的commit都会被保留，也就是说对于项目的版本历史来说是往前走的。而git reset 则是回到某次提交，类似于穿越时空。
 ```
 
 
