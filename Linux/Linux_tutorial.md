@@ -8,11 +8,35 @@ sudo apt-get update
 2. 删除
 然后进入 /etc/apt/sources.list.d 目录，将相应 ppa 源的保存文件删除。然后更新一下。
 
+**一、通过apt-get安装指定版本**
+
+```
+apt-get install <<package name>>=<<version>>
+```
+
+**二、查询指定软件有多少个版本**
+
+```
+apt-cache madison <<package name>>
+```
+
+软件卸载
+
+```
+# 删除软件及其配置文件
+apt-get --purge remove <package>
+# 删除没用的依赖包
+apt-get autoremove <package>
+# 此时dpkg的列表中有“rc”状态的软件包，可以执行如下命令做最后清理：
+dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P
+```
+
 
 
 
 
 # 文件基本操作
+
 + 文件夹
     - mkdir temp
 + 文件
