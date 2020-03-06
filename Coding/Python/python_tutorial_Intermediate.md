@@ -2004,7 +2004,14 @@ print(plt.rcParams.get('figure.figsize')) # [6.0, 4.0]
 
 #### Lines, bars and markers
 
+List of named colors — Matplotlib 3.1.0 documentation
+https://matplotlib.org/3.1.0/gallery/color/named_colors.html
 
+matplotlib.markers — Matplotlib 3.2.0 documentation
+https://matplotlib.org/api/markers_api.html
+
+matplotlib.pyplot.plot — Matplotlib 2.1.1 documentation
+https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html
 
 #### Images, contours and fields
 
@@ -2086,7 +2093,7 @@ np.random.seed(19680801)
 grid = np.random.rand(4, 4)
 
 fig, axs = plt.subplots(nrows=3, ncols=6, figsize=(9, 6),
-                        subplot_kw={'xticks': [], 'yticks': []})
+                        subplot_kw={'xticks': [], 'yticks': []}) # 不显示坐标轴
 
 for ax, interp_method in zip(axs.flat, methods):
     ax.imshow(grid, interpolation=interp_method, cmap='viridis')
@@ -2150,6 +2157,123 @@ plt.show()
 
 #### Subplots, axes and figures
 
+```python
+# 适用与python2
+import matplotlib.gridspec as gridspec
+
+fig = plt.figure(figsize=(6,4), dpi=300)
+gs1 = gridspec.GridSpec(2, 2)
+#gs1.update(left=0.05, right=0.48, wspace=0.05)
+ax1 = fig.add_subplot(gs1[0, 0])
+ax2 = fig.add_subplot(gs1[0, 1])
+ax3 = fig.add_subplot(gs1[1, :])
+
+x = np.arange(1,49,1)
+ax1.plot(x, rmse, label="RMSE")
+ax1.set_xlim(0,49)
+ax1.set_xticks(np.arange(0, 49, 6))
+ax1.set_xlabel("Sequence Length")
+ax1.set_ylabel("RMSE")
+ax1.legend(prop={'size':8})
+
+#ax12.plot(x, baseline_r_square)
+ax2.plot(x, r2, label='R2')
+ax2.plot(x, ar2, label='R2_adjust')
+ax2.set_xlim(0,49)
+ax2.set_xticks(np.arange(0, 49, 6))
+ax2.set_xlabel("Sequence Length")
+ax2.set_ylabel("R2 & R2_adjust")
+ax2.legend(loc="lower right", prop={'size':8})
+
+ax3.stem(x, n_hidden)
+ax3.set_xlim(0,49)
+ax3.set_xticks(np.arange(0, 49, 4))
+ax3.set_yticks(np.arange(0, 576, 64))
+ax3.set_xlabel("Sequence Length")
+ax3.set_ylabel("Hidden Neurons")
+
+fig.tight_layout()
+
+plt.show()
+
+
+
+# python3 参考官方文档
+
+```
+
+区域放大图
+
+Zoom region inset axes — Matplotlib 3.1.3 documentation
+https://matplotlib.org/3.1.3/gallery/subplots_axes_and_figures/zoom_inset_axes.html
+
+```python
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
+from mpl_toolkits.axes_grid1.inset_locator import mark_inset
+
+# data
+payload = [0.1, 0.2, 0.3, 0.4]
+single_adv = [ 2.707000,   1.031000,   1.000200,  1.000010]
+orig = [2.474600,    1.002000,   1.000000,   1.000001]
+mean_adv = [ 2.611600,    1.036333,   1.002000,   1.000000]
+splice_orig = [ 4.550600,    1.488333,   1.207667,   1.001667]
+splice_adv = [5.728200,    1.876000,   1.607667,   1.953333]
+
+# create figure
+fig, ax = plt.subplots(figsize=(6,5), dpi=300)
+
+## 绘制主图
+# plot(x, y, color='green', marker='o', linestyle='dashed',linewidth=2, markersize=12)
+ax.plot(payload, splice_adv, color='cyan', linewidth=2, marker='s', label='ADV-IMS')
+ax.plot(payload, splice_orig, color='cyan', linestyle='dashed',marker='s', linewidth=2, label='IMS [11]')
+ax.plot(payload, single_adv, color='lime', linewidth=2, marker='o',label='ADV-SIG [31]')
+ax.plot(payload, mean_adv, color='red', linewidth=2, marker='^',label='ADV-EVEN')
+ax.plot(payload, orig, color='red', linestyle='dashed', linewidth=2, marker='^',label='EVEN [7]')
+
+#设置坐标轴范围
+#ax.set_xlim((0, 0.4))
+#ax.set_ylim((-2, 2))
+#设置坐标轴名称
+ax.set_xlabel('Payload (bpp)')
+ax.set_ylabel('Average rank in 50 actors')
+#设置坐标轴刻度
+my_x_ticks = np.arange(0.1, 0.5, 0.1)
+my_y_ticks = np.arange(1, 7, 1)
+ax.set_xticks(my_x_ticks)
+ax.set_yticks(my_y_ticks)
+ax.legend() # 放到最后会导致显式子图的label
+
+## 绘制子图
+# inset axes....
+axins = ax.inset_axes([0.5, 0.31, 0.485, 0.35]) # [x0, y0, width, height] 数值代表的是比例
+axins.plot(payload, single_adv, color='lime', linewidth=2, marker='o')
+axins.plot(payload, mean_adv, color='red', linewidth=2, marker='^')
+axins.plot(payload, orig, color='red', linestyle='dashed', linewidth=2, marker='^')
+
+# sub region of the original image
+x1, x2, y1, y2 = 0.19, 0.21, 0.99, 1.15
+axins.set_xlim(x1, x2)
+axins.set_ylim(y1, y2)
+
+axins.set_xticks([0.2])
+axins.set_yticks([1.00, 1.07, 1.14])
+
+ax.indicate_inset_zoom(axins)
+
+#axins.set_xticklabels('')
+#axins.set_yticklabels('')
+# fix the number of ticks on the inset axes
+#axins.yaxis.get_major_locator().set_params(nbins=10)
+#axins.xaxis.get_major_locator().set_params(nbins=2)
+#plt.xticks(visible=True)
+#plt.yticks(visible=True)
+
+fig.tight_layout()
+fig.savefig('1.eps')
+plt.show()
+```
+
 
 
 #### Statistics
@@ -2159,6 +2283,13 @@ plt.show()
 #### Pie and ploar charts
 
 #### Text, labels and annotations
+
+```python
+ # 设置图例位置,loc可以为[upper, lower, left, right, center]
+        plt.legend(loc="upper left", prop=myfont, shadow=True)
+plt.legend(loc = 0, prop = {'size':8}) # 右上1,左上2,3,4
+
+```
 
 
 
@@ -2353,6 +2484,8 @@ plt.plot(x,y2,color='red',linewidth=2,linestyle='--', label='y2')
 #添加相关图例
 plt.xlabel("x")
 plt.ylabel('y')
+ # 设置图例位置,loc可以为[upper, lower, left, right, center]
+        plt.legend(loc="upper left", prop=myfont, shadow=True)
 plt.legend(loc = 0, prop = {'size':8}) # 右上1,左上2,3,4
 plt.title('I')
 
